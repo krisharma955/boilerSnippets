@@ -1,6 +1,6 @@
 package com.K955.boilerSnippets.Entity;
 
-import com.K955.boilerSnippets.Enum.Role;
+import com.K955.boilerSnippets.Enum.User.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
