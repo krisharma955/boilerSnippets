@@ -1,6 +1,7 @@
 package com.K955.boilerSnippets.Security.OAuth;
 
 import com.K955.boilerSnippets.Entity.User;
+import com.K955.boilerSnippets.ExceptionHandling.Exceptions.BadRequestException;
 import com.K955.boilerSnippets.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
@@ -22,7 +23,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Object id = oAuth2User.getAttribute("id");
         if (id == null) {
-            throw new OAuth2AuthenticationException("GitHub ID not found");
+            throw new BadRequestException("GitHub ID not found");
         }
         String gitHubId = id.toString();
 

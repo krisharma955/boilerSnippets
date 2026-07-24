@@ -1,6 +1,7 @@
 package com.K955.boilerSnippets.Security;
 
 import com.K955.boilerSnippets.Entity.User;
+import com.K955.boilerSnippets.ExceptionHandling.Exceptions.UserNotFoundException;
 import com.K955.boilerSnippets.Repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -71,7 +72,8 @@ public class JwtUtil {
 
     public User getCurrentUser() {
         Long githubId = Long.valueOf(getCurrentUserGithubId());
-        return userRepository.findByGithubId(githubId).orElse(null);
+        return userRepository.findByGithubId(githubId)
+                .orElseThrow(() -> new UserNotFoundException(githubId.toString()));
     }
 
     public Long getCurrentUserId() {

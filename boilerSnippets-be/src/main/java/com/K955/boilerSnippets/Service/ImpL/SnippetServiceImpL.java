@@ -9,6 +9,9 @@ import com.K955.boilerSnippets.Enum.Snippet.Framework;
 import com.K955.boilerSnippets.Enum.Snippet.Language;
 import com.K955.boilerSnippets.Enum.Snippet.SnippetType;
 import com.K955.boilerSnippets.Enum.User.Role;
+import com.K955.boilerSnippets.ExceptionHandling.Exceptions.BadRequestException;
+import com.K955.boilerSnippets.ExceptionHandling.Exceptions.SnippetNotFoundException;
+import com.K955.boilerSnippets.ExceptionHandling.Exceptions.UserNotFoundException;
 import com.K955.boilerSnippets.Mapper.SnippetMapper;
 import com.K955.boilerSnippets.Mapper.UserMapper;
 import com.K955.boilerSnippets.Repository.SnippetRepository;
@@ -35,10 +38,11 @@ public class SnippetServiceImpL implements SnippetService {
 
     @Override
     public SnippetResponse createSnippet(SnippetRequest request) {
-        if(!checkAdmin()) throw new RuntimeException("Only Accessible to Admins");
+        if(!checkAdmin()) throw new BadRequestException("Only Accessible to Admins");
 
         Long userId = jwtUtil.getCurrentUserId();
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
 
         Snippet snippet = Snippet.builder()
                 .title(request.title())
@@ -59,7 +63,8 @@ public class SnippetServiceImpL implements SnippetService {
 
     @Override
     public SnippetResponse getSnippetById(Long snippetId) {
-        Snippet snippet = snippetRepository.findById(snippetId).orElse(null);
+        Snippet snippet = snippetRepository.findById(snippetId)
+                .orElseThrow(() -> new SnippetNotFoundException(snippetId.toString()));
         return snippetMapper.toSnippetResponse(snippet);
     }
 
@@ -72,7 +77,8 @@ public class SnippetServiceImpL implements SnippetService {
     @Override
     public SnippetResponse updateSnippet(Long snippetId, UpdateSnippetRequest request) {
         if(!checkAdmin()) throw new RuntimeException("Only Accessible to Admins");
-        Snippet snippet = snippetRepository.findById(snippetId).orElse(null);
+        Snippet snippet = snippetRepository.findById(snippetId)
+                .orElseThrow(() -> new SnippetNotFoundException(snippetId.toString()));
 
         if(request.title() != null) snippet.setTitle(request.title());
         if(request.description() != null) snippet.setDescription(request.description());
@@ -92,7 +98,8 @@ public class SnippetServiceImpL implements SnippetService {
     @Override
     public void deleteSnippet(Long snippetId) {
         if(!checkAdmin()) throw new RuntimeException("Only Accessible to Admins");
-        Snippet snippet = snippetRepository.findById(snippetId).orElse(null);
+        Snippet snippet = snippetRepository.findById(snippetId)
+                .orElseThrow(() -> new SnippetNotFoundException(snippetId.toString()));
         snippetRepository.delete(snippet);
     }
 
@@ -100,7 +107,8 @@ public class SnippetServiceImpL implements SnippetService {
 
     private boolean checkAdmin() {
         Long userId = jwtUtil.getCurrentUserId();
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
         return user.getRole().equals(Role.ADMIN);
     }
 

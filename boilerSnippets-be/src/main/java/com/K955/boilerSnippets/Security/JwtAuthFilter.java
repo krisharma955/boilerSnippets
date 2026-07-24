@@ -1,6 +1,7 @@
 package com.K955.boilerSnippets.Security;
 
 import com.K955.boilerSnippets.Entity.User;
+import com.K955.boilerSnippets.ExceptionHandling.Exceptions.UserNotFoundException;
 import com.K955.boilerSnippets.Repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -45,7 +46,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         Long githubId = jwtUtil.extractGithubId(token);
 
-        User user = userRepository.findByGithubId(githubId).orElse(null);
+        User user = userRepository.findByGithubId(githubId)
+                .orElseThrow(() -> new UserNotFoundException(githubId.toString()));
 
         if(user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
