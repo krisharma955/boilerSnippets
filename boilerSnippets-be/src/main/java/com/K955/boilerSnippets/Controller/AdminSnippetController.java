@@ -15,13 +15,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/snippets")
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminSnippetController {
 
     private final SnippetService snippetService;
@@ -40,11 +38,11 @@ public class AdminSnippetController {
     public ResponseEntity<Page<SnippetResponse>> getAllSnippets(
             @RequestParam(required = false) Language language,
             @RequestParam(required = false) Framework framework,
-            @RequestParam(required = false) SnippetType type,
-            @RequestParam(required = false) String title,
+            @RequestParam(required = false) SnippetType snippetType,
+            @RequestParam(required = false) String keyword,
             @PageableDefault(size = 5, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(snippetService.getAllSnippets(language, framework, type, title, pageable));
+        return ResponseEntity.ok(snippetService.getAllSnippets(language, framework, snippetType, keyword, pageable));
     }
 
     @PatchMapping("/{snippetId}")

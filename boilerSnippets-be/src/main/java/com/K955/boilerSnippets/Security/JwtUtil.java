@@ -1,9 +1,14 @@
 package com.K955.boilerSnippets.Security;
 
+import com.K955.boilerSnippets.Entity.User;
+import com.K955.boilerSnippets.Repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -11,7 +16,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
+
+    private final UserRepository userRepository;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -54,6 +62,20 @@ public class JwtUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getCurrentUserGithubId() { //githubId as string
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+    public User getCurrentUser() {
+        Long githubId = Long.valueOf(getCurrentUserGithubId());
+        return userRepository.findByGithubId(githubId).orElse(null);
+    }
+
+    public Long getCurrentUserId() {
+        return getCurrentUser().getId();
     }
 
 }
